@@ -26,6 +26,7 @@ python3 detect.py \
   --labels ${TEST_DATA}/coco_labels.txt
 
 """
+import time
 import argparse
 import collections
 import common
@@ -93,8 +94,10 @@ def main():
 
     cap = cv2.VideoCapture(args.camera_idx)
 
-    while cap.isOpened():
-        ret, frame = cap.read()
+    while cap.grab():
+        #Check Time start
+        t1 = time.time()
+        ret, frame = cap.retrieve()
         if not ret:
             break
         cv2_im = frame
@@ -110,6 +113,11 @@ def main():
         cv2.imshow('frame', cv2_im)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
+
+        # Check total processing time
+        t2 = time.time()
+        fps = 1 / (t2 - t1)
+        print("{:.2f}".format(fps))        
 
     cap.release()
     cv2.destroyAllWindows()
